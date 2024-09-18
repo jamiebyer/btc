@@ -98,6 +98,7 @@ app.layout = html.Div(
 )
 
 df = pd.read_csv("./data/daily_outreach_support.csv")
+df = df.sort_values(by=["Date:"])
 
 sum_categories = []
 sums = []
