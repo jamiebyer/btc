@@ -10,7 +10,7 @@ import plotly.graph_objects as go
 from pandas.api.types import is_numeric_dtype
 
 import numpy as np
-
+import webbrowser
 
 
 descriptors = ['Adults', 'Youth', 'Female', 'Male',
@@ -60,7 +60,6 @@ shift_info = ['Start Time', 'End Time', 'Team Lead', "Location"
        'Outreach Workers', 'Shift Notes']
 
 
-
 category_dict = {
     "descriptors": descriptors,
     "food": food,
@@ -71,7 +70,6 @@ category_dict = {
     "referrals": referrals,
     "medical": medical
 }
-
 categories = list(category_dict.keys())
 
 
@@ -83,7 +81,6 @@ app = dash.Dash(
     url_base_pathname=environ.get("JUPYTERHUB_SERVICE_PREFIX", "/"),
     external_stylesheets=external_stylesheets,
 )
-#app.config.suppress_callback_exceptions=True
 
 app.layout = html.Div(
     [
@@ -96,6 +93,8 @@ app.layout = html.Div(
         dcc.Graph(id="figure"),
     ]
 )
+
+#webbrowser.open("http://0.0.0.0:8050/")
 
 df = pd.read_csv("./data/daily_outreach_support.csv")
 df = df.sort_values(by=["Date:"])
@@ -112,8 +111,6 @@ sums = np.array(sums)
 
 
 # can put the categories in a diff file so they're easier to change..
-
-
 @app.callback(
     Output(component_id='figure', component_property='figure'),
     Input(component_id='category', component_property='value'),
