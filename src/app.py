@@ -9,55 +9,125 @@ import plotly.express as px
 import plotly.graph_objects as go
 from pandas.api.types import is_numeric_dtype
 
+from datetime import date, datetime
 import numpy as np
 import webbrowser
 
 
-descriptors = ['Adults', 'Youth', 'Female', 'Male',
-       'Gender Diverse', 'Indigenous', 'Caucasian', 'People of Colour',
-       'Rough Sleepers', 'Veterans']
+df = pd.read_csv("./data/daily_outreach_support.csv", index_col=0)
+df.index = pd.to_datetime(df.index)
+df = df.sort_values(by=["Date:"])
 
-food = ['Sandwiches', 'Bottled Water',
-       'Other Drinks (fizzy water, juice, pop, etc)',
-       'Meal Replacement Drinks (Ensure, Boost, Protein Drinks, etc...)',
-       'Protein Snacks (beef jerky, pepperoni, etc...)',
-       'Baked Goods (cookies, cakes, Rice Krispies Squares, etc)',
-       'Chips, Crackers, etc',
-       'Electrolytes, etc (Gatorade, electrolyte powder, Emergen-C)',
-       'Canned Goods & Noodles (soup, chili, ravioli, etc...)',
-       'Fruit (fresh, canned, fruit cups)',
-       'Candy (chocolate, gummies, etc...)',
-       'Other Snacks (popcorn, granola bars, etc...)']
 
-hygiene_supplies = ['Hygiene Kits',
-       'Dental Kits', 'Shaving Kits', 'Menstrual Product Kits',
-       'Hand Sanitizer', 'Mini First Aid Kit', 'Wet Wipes']
+descriptors = [
+    "Adults",
+    "Youth",
+    "Female",
+    "Male",
+    "Gender Diverse",
+    "Indigenous",
+    "Caucasian",
+    "People of Colour",
+    "Rough Sleepers",
+    "Veterans",
+]
 
-clothing = ['Underwear',
-       'Socks', 'Sweaters', 'Jackets', 'Long Johns', 'Hand/Foot warmers',
-       'Hats (Toques in Winter/Baseball in summer)', 'Gloves']
+food = [
+    "Sandwiches",
+    "Bottled Water",
+    "Other Drinks (fizzy water, juice, pop, etc)",
+    "Meal Replacement Drinks (Ensure, Boost, Protein Drinks, etc...)",
+    "Protein Snacks (beef jerky, pepperoni, etc...)",
+    "Baked Goods (cookies, cakes, Rice Krispies Squares, etc)",
+    "Chips, Crackers, etc",
+    "Electrolytes, etc (Gatorade, electrolyte powder, Emergen-C)",
+    "Canned Goods & Noodles (soup, chili, ravioli, etc...)",
+    "Fruit (fresh, canned, fruit cups)",
+    "Candy (chocolate, gummies, etc...)",
+    "Other Snacks (popcorn, granola bars, etc...)",
+]
 
-harm_reduction = ['Bubbles', 'Naloxone', 'Straights', 'Longs', 'Shorts',
-       'Foil', 'Sharps Disposal', 'Condoms/Dental Dams']
+hygiene_supplies = [
+    "Hygiene Kits",
+    "Dental Kits",
+    "Shaving Kits",
+    "Menstrual Product Kits",
+    "Hand Sanitizer",
+    "Mini First Aid Kit",
+    "Wet Wipes",
+]
 
-living_supplies = ['Emergency Blankets', 'Sunscreen/Petroleum Jelly',
-       'Emergency Shelter.1', 'Tents', 'Tarps', 'Sleeping Bags', 'Blankets',
-       'Ponchos', 'Backpacks/Tote Bags', 'Battery Packs',
-       'Bus Tickets']
+clothing = [
+    "Underwear",
+    "Socks",
+    "Sweaters",
+    "Jackets",
+    "Long Johns",
+    "Hand/Foot warmers",
+    "Hats (Toques in Winter/Baseball in summer)",
+    "Gloves",
+]
+
+harm_reduction = [
+    "Bubbles",
+    "Naloxone",
+    "Straights",
+    "Longs",
+    "Shorts",
+    "Foil",
+    "Sharps Disposal",
+    "Condoms/Dental Dams",
+]
+
+living_supplies = [
+    "Emergency Blankets",
+    "Sunscreen/Petroleum Jelly",
+    "Emergency Shelter.1",
+    "Tents",
+    "Tarps",
+    "Sleeping Bags",
+    "Blankets",
+    "Ponchos",
+    "Backpacks/Tote Bags",
+    "Battery Packs",
+    "Bus Tickets",
+]
 
 misc = ["Gift Cards"]
 
-referrals = ['Detox/Treatment', 'Housing', 'Mental Health', 'ID Clinic',
-       'Food Source', 'Harm Reduction', 'Medical',
-       'Clothing Source', 'Legal', 'Financial', 'Employment', 'Youth.1',
-       'Immigrant Services', 'Indigenous Services']
+referrals = [
+    "Detox/Treatment",
+    "Housing",
+    "Mental Health",
+    "ID Clinic",
+    "Food Source",
+    "Harm Reduction",
+    "Medical",
+    "Clothing Source",
+    "Legal",
+    "Financial",
+    "Employment",
+    "Youth.1",
+    "Immigrant Services",
+    "Indigenous Services",
+]
 
-medical = ['Syringes/Paraphernalia Discarded', 'Police Called',
-       'EMS Called', 'DOAP Called', 'First Aid Administered',
-       'Naloxone Administered']
+medical = [
+    "Syringes/Paraphernalia Discarded",
+    "Police Called",
+    "EMS Called",
+    "DOAP Called",
+    "First Aid Administered",
+    "Naloxone Administered",
+]
 
-shift_info = ['Start Time', 'End Time', 'Team Lead', "Location"
-       'Outreach Workers', 'Shift Notes']
+shift_info = [
+    "Start Time",
+    "End Time",
+    "Team Lead",
+    "Location" "Outreach Workers",
+    "Shift Notes",
+]
 
 
 category_dict = {
@@ -68,7 +138,7 @@ category_dict = {
     "harm_reduction": harm_reduction,
     "living_supplies": living_supplies,
     "referrals": referrals,
-    "medical": medical
+    "medical": medical,
 }
 categories = list(category_dict.keys())
 
@@ -84,51 +154,69 @@ app = dash.Dash(
 
 app.layout = html.Div(
     [
-        dcc.Dropdown(
-            id="category",
-            options=categories,
-            value=categories[0],
+        html.Div(
+            [
+                dcc.Dropdown(
+                    id="category",
+                    options=categories,
+                    value=categories[0],
+                )
+            ],
+            style={"width": "45%", "layout": "inline-block"},
         ),
-        dcc.RadioItems(id="figure_type", options=['timeseries', 'bar'], value='timeseries'),
+        html.Div(
+            [
+                dcc.RadioItems(
+                    id="figure_type", options=["timeseries", "bar"], value="timeseries"
+                ),
+                dcc.DatePickerRange(
+                    id="date_range",
+                    start_date=df.index[0],
+                    end_date=df.index[-1],
+                    display_format="Y-MMM-DD",
+                ),
+            ],
+            style={"width": "45%", "layout": "inline-block"},
+        ),
         dcc.Graph(id="figure"),
     ]
 )
 
-#webbrowser.open("http://0.0.0.0:8050/")
-
-df = pd.read_csv("./data/daily_outreach_support.csv")
-df = df.sort_values(by=["Date:"])
-
-sum_categories = []
-sums = []
-
-for c in df.columns:
-    if is_numeric_dtype(df[c]):
-       sum_categories.append(c)
-       sums.append(np.sum(df[c]))
-
-sums = np.array(sums)
-
 
 # can put the categories in a diff file so they're easier to change..
 @app.callback(
-    Output(component_id='figure', component_property='figure'),
-    Input(component_id='category', component_property='value'),
-    Input(component_id='figure_type', component_property='value'),
+    Output(component_id="figure", component_property="figure"),
+    Input(component_id="category", component_property="value"),
+    Input(component_id="date_range", component_property="start_date"),
+    Input(component_id="date_range", component_property="end_date"),
+    Input(component_id="figure_type", component_property="value"),
 )
-def update_figure(category, figure_type):
+def update_figure(category, start_date, end_date, figure_type):
+    # df subset by date
+    df_subset = df.loc[df.index][pd.to_datetime(start_date) : pd.to_datetime(end_date)]
     category_elements = category_dict[category]
 
     if figure_type == "timeseries":
-       figure = px.line(df, x="Date:", y=category_elements)
-        
+        figure = px.line(df_subset, y=category_elements)
+
     elif figure_type == "bar":
-       inds = [sum_categories[i] in category_elements for i in range(len(sum_categories))]
-       figure = go.Figure([go.Bar(x=category_elements, y=sums[inds])])
-    
+        sum_categories = []
+        sums = []
+
+        for c in df_subset.columns:
+            if is_numeric_dtype(df_subset[c]):
+                sum_categories.append(c)
+                sums.append(np.sum(df_subset[c]))
+
+        sums = np.array(sums)
+
+        inds = [
+            sum_categories[i] in category_elements for i in range(len(sum_categories))
+        ]
+        figure = go.Figure([go.Bar(x=category_elements, y=sums[inds])])
+
     return figure
 
 
-
 if __name__ == "__main__":
-    app.run_server(debug=True, host="0.0.0.0", port=8050)
+    app.run_server(debug=True, host="0.0.0.0", port=8051)
